@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import { Button, FormControl, InputLabel, Input } from '@material-ui/core'
 import Message from './Message';
-import logo from './logo.jpg'
 import FlipMove from 'react-flip-move'
 import SendIcon from '@material-ui/icons/Send'
 import IconButton from '@material-ui/core/IconButton'
 import axios from './axios.js';
 import Pusher from 'pusher-js';
 import { auth } from './firebase';
+import { ReactComponent as MessengerLogo } from './messenger.svg';
 
 const pusher = new Pusher(process.env.REACT_APP_PUSHER_KEY || '', { 
   cluster: process.env.REACT_APP_PUSHER_CLUSTER || 'ap2' 
@@ -174,145 +174,87 @@ function App() {
   // if username not set, show login/register page first
   if (!username) {
     return (
-      <div className="App">
-        <img src={logo} alt="messenger logo" className="app__logo" />
-        <h2>{isLoginMode ? 'Login to start chatting' : 'Register to start chatting'}</h2>
+      <div className="App app__authContainer">
+        <div className="app__authContent">
+          <MessengerLogo className="app__authLogo" />
+          <h2 className="app__authHeading">{isLoginMode ? 'Login to start chatting' : 'Register to start chatting'}</h2>
 
-        {authError && (
-          <p style={{ color: 'red', marginTop: 8 }}>{authError}</p>
-        )}
+          {authError && (
+            <p className="app__authError">{authError}</p>
+          )}
 
-        <form
-          className="app__form"
-          onSubmit={handleAuthSubmit}
-          style={{ maxWidth: 400, margin: '20px auto' }}
-        >
-          <FormControl className="app__formControl" fullWidth>
-            <InputLabel htmlFor="auth-identifier">
-              Username or Email
-            </InputLabel>
-            <Input
-              id="auth-identifier"
-              className="app__input"
-              placeholder="Enter username or email"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-            />
-          </FormControl>
+          <form
+            className="app__authForm"
+            onSubmit={handleAuthSubmit}
+          >
+            <FormControl className="app__authFormControl" fullWidth>
+              <InputLabel htmlFor="auth-identifier">
+                Username or Email
+              </InputLabel>
+              <Input
+                id="auth-identifier"
+                className="app__authInput"
+                placeholder="Enter username or email"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+              />
+            </FormControl>
 
-          <FormControl className="app__formControl" fullWidth style={{ marginTop: 16 }}>
-            <InputLabel htmlFor="auth-password">
-              Password
-            </InputLabel>
-            <Input
-              id="auth-password"
-              type="password"
-              className="app__input"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </FormControl>
+            <FormControl className="app__authFormControl" fullWidth>
+              <InputLabel htmlFor="auth-password">
+                Password
+              </InputLabel>
+              <Input
+                id="auth-password"
+                type="password"
+                className="app__authInput"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </FormControl>
 
-          <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              disabled={authLoading || !identifier.trim() || !password.trim()}
-            >
-              {authLoading
-                ? (isLoginMode ? 'Logging in...' : 'Registering...')
-                : (isLoginMode ? 'Login' : 'Register')}
-            </Button>
-            <Button
-              color="secondary"
-              onClick={() => setIsLoginMode(prev => !prev)}
-            >
-              {isLoginMode
-                ? "Don't have an account? Register"
-                : 'Already have an account? Login'}
-            </Button>
-          </div>
-        </form>
+            <div className="app__authButtons">
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                fullWidth
+                disabled={authLoading || !identifier.trim() || !password.trim()}
+              >
+                {authLoading
+                  ? (isLoginMode ? 'Logging in...' : 'Registering...')
+                  : (isLoginMode ? 'Login' : 'Register')}
+              </Button>
+              <Button
+                color="secondary"
+                fullWidth
+                onClick={() => setIsLoginMode(prev => !prev)}
+              >
+                {isLoginMode
+                  ? "Don't have an account? Register"
+                  : 'Already have an account? Login'}
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="App">
-      {/* Full-width header container so logout really sits at screen right */}
-      <div style={{ position: 'relative', width: '100%', paddingTop: 8 }}>
-        {/* Center block: logo and welcome text */}
-        <div
-          style={{
-            maxWidth: 800,
-            margin: '0 auto 16px',
-            padding: '0 16px',
-            boxSizing: 'border-box',
-            textAlign: 'center',
-          }}
-        >
-          <img
-            src={logo}
-            alt="messenger logo"
-            className="app__logo"
-            style={{
-              height: 48,
-              objectFit: 'contain',
-              display: 'inline-block',
-            }}
-          />
-          <div style={{ marginTop: 4, fontWeight: 500 }}>
+      {/* Header with logo and logout button */}
+      <div className="app__header">
+        <div className="app__headerContent">
+          <MessengerLogo className="app__logo" />
+          <div className="app__welcome">
             Welcome {username}
           </div>
-          {email && (
-            <div style={{ fontSize: 12, opacity: 0.8 }}>{email}</div>
-          )}
         </div>
-
-        {/* Right side: avatar + logout, fixed to top-right of viewport */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 8,
-            right: 16,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-          }}
-        >
-          {/* Avatar circle: photo or first letter */}
-          <div
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              overflow: 'hidden',
-              backgroundColor: '#3f51b5',
-              color: '#fff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 14,
-              textTransform: 'uppercase',
-            }}
-          >
-            {photoUrl ? (
-              <img
-                src={photoUrl}
-                alt={username}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                }}
-              />
-            ) : (
-              (username || email || '?')[0]
-            )}
-          </div>
-
+        
+        {/* Logout button at top-right */}
+        <div className="app__logoutContainer">
           <Button
             variant="outlined"
             color="secondary"
@@ -324,22 +266,26 @@ function App() {
         </div>
       </div>
 
-      <form className='app__form' >
+      {/* Messages container */}
+      <div className="app__messagesContainer">
+        <FlipMove>
+          {
+            messages.map( message => (
+              <Message key={message._id} message={message} username={username} />
+            ))
+          }
+        </FlipMove>
+      </div>
+
+      {/* Input form at bottom */}
+      <form className='app__form' onSubmit={sendMessage}>
         <FormControl className='app__formControl' >
           <Input className='app__input' placeholder='Enter a message...' value={input} onChange={(e) => setInput(e.target.value)} />
-          <IconButton className='app__iconButton' variant='text' color='primary' disabled={!input} onClick={sendMessage} type="submit" >
+          <IconButton className='app__iconButton' variant='text' color='primary' disabled={!input} type="submit" >
             <SendIcon />
           </IconButton>
         </FormControl>
       </form>
-
-      <FlipMove>
-        {
-          messages.map( message => (
-            <Message key={message._id} message={message} username={username} />
-          ))
-        }
-      </FlipMove>
     </div>
   );
 }
