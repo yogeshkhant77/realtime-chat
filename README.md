@@ -116,7 +116,7 @@ Create a `.env` file in `messenger-backend/` directory:
 
 ```env
 # MongoDB Connection String
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
+MONGODB_URI=your mongodb uri
 
 # Server Port
 PORT=9000
